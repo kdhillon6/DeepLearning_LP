@@ -23,7 +23,7 @@ data_dir_list = os.listdir(data_path)
 rows = 32
 cols = 32
 channel = 1
-num_epoch = 1
+num_epoch = 10
 num_classes = 36
 folder_counter = -1
 image_data = []
@@ -36,7 +36,6 @@ for dataset in sorted(data_dir_list):
     print('Loaded images of folder '+ '{}'.format(dataset))
     for img in img_list:
         input_img = cv2.imread(data_path + '/' + dataset + '/' + img, 0)
-        #input_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2GRAY)
         input_img_resize = cv2.resize(input_img,(rows,cols))
         image_data.append(input_img_resize)
         label_data.append(folder_counter)
@@ -50,9 +49,6 @@ print(image_data.shape)
 
 image_data = np.expand_dims(image_data, axis=4)
 print(image_data.shape)
-
-#Preprocessing image data
-#def image_to_feature_vector(image, size=(rows,cols)):
 
 #lables to one-hot
 one_hot_labels = np_utils.to_categorical(label_data, num_classes)
@@ -98,6 +94,7 @@ model.layers[0].get_weights()
 np.shape(model.layers[0].get_weights()[0])
 model.layers[0].trainable
 
+#Train the network
 training = model.fit(
         data_train,
         labels_train,
@@ -108,6 +105,10 @@ training = model.fit(
         shuffle = True
         )
 
+#Save the model
+model.save('CNNModel.h5')
+
+'''
 #Visualize
 train_loss = training.history['loss']
 val_loss = training.history['val_loss']
@@ -134,7 +135,7 @@ plt.title('train_acc vs val_acc')
 plt.grid(True)
 plt.legend(['train','val'],loc=4)
 plt.style.use(['classic'])
-
+'''
 
 score = model.evaluate(data_test, labels_test, verbose=0)
 print('Test Loss:', score[0])
